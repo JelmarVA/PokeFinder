@@ -18,7 +18,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     var mapHasCenteredOnce = false
     var geoFire: GeoFire!
     var geoFireRef: FIRDatabaseReference!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -67,7 +67,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    
+        
         let annoIdentifier = "Pokemon"
         var annotationView: MKAnnotationView?
         
@@ -119,7 +119,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
     }
     
-    func createSighting (forLocation location: CLLocation, withPokemon pokeId: Int) {
+    func createSighting(forLocation location: CLLocation, withPokemon pokeId: Int) {
         
         geoFire.setLocation(location, forKey: "\(pokeId)")
     }
@@ -135,14 +135,21 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             }
         }
     }
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == Constants.ShowPokemonIdentifier {
+            if let vc = segue.destination as? PokedexViewController {
+                let location = CLLocation(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
+                
+                vc.location = location
+            }
+        }
+    }
+    
     @IBAction func spotRandomPokemon(_ sender: UIButton) {
         
-        let location = CLLocation(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
-        
-        let rand = arc4random_uniform(151) + 1
-        createSighting(forLocation: location, withPokemon: Int(rand))
+        performSegue(withIdentifier: Constants.ShowPokemonIdentifier, sender: sender)
     }
-
+    
 }
 
